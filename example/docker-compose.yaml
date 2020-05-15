@@ -1,6 +1,9 @@
 version: "3"
 services: 
-  watcher:
-    image: NiceLabs/juniper-archive-agent:latest
+  agent:
+    image: nicelabs/juniper-archive-agent:latest
+    ports:
+      - "20:20"
+      - "21:21"
     volumes:
       - ./configure.json:/configure.json

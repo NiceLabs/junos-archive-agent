@@ -1,6 +1,6 @@
 {
   "ftp": {
-    "port": 28374,
+    "port": 21,
     "host": "::",
     "username": "juniper",
     "password": "[your password]"
