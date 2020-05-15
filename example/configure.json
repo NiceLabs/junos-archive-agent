@@ -1,0 +1,13 @@
+{
+  "ftp": {
+    "port": 28374,
+    "host": "::",
+    "username": "juniper",
+    "password": "[your password]"
+  },
+  "github": {
+    "owner": "[your owner]",
+    "repo": "[your repo]",
+    "token": "[your personal token]"
+  }
+}
