@@ -4,20 +4,27 @@ import (
 	"compress/gzip"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/google/go-github/github"
+	"github.com/thoas/go-funk"
 
 	"goftp.io/server"
 )
 
 var (
-	errUnable = errors.New("github: not supported")
+	errUnable     = errors.New("junos: not supported")
+	errFileName   = errors.New("junos: filename format error")
+	reFileName    = regexp.MustCompile(`^(?P<name>.+)_\d{8}_\d{6}_juniper(?P<suffix>\.conf(?:\.\d+)?)$`)
+	reNameIndex   = funk.IndexOf(reFileName.SubexpNames(), "name")
+	reSuffixIndex = funk.IndexOf(reFileName.SubexpNames(), "suffix")
 )
 
 type junosDriver struct {
@@ -45,17 +52,21 @@ func (d *junosDriver) PutFile(destPath string, data io.Reader, appendData bool) 
 	}
 	n = int64(len(block))
 
-	filePath := d.makeStoragePath(destPath)
+	filePath := d.makeFilePath(destPath)
+	if filePath == "" {
+		err = errFileName
+		return
+	}
 
 	ctx := context.Background()
 	content, _, _, _ := d.client.Repositories.GetContents(ctx, d.Owner, d.Repo, filePath, nil)
 	opts := &github.RepositoryContentFileOptions{Message: &destPath, Content: block}
 	if content != nil {
 		opts.SHA = content.SHA
-	}
-	if content != nil && d.isChanged(content, string(opts.Content)) {
-		log.Println("not changed, ignored")
-		return
+		if d.isChanged(content, string(opts.Content)) {
+			log.Println("not changed, ignored")
+			return
+		}
 	}
 	_, _, err = d.client.Repositories.UpdateFile(ctx, d.Owner, d.Repo, filePath, opts)
 	return
@@ -80,9 +91,15 @@ func (d *junosDriver) decompress(data io.Reader) ([]byte, error) {
 	return ioutil.ReadAll(reader)
 }
 
-func (d *junosDriver) makeStoragePath(name string) string {
+func (d *junosDriver) makeFilePath(name string) string {
 	base, fileName := path.Split(name)
 	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
-	routerName := strings.SplitN(fileName, "_", 3)[0]
-	return path.Join(d.Prefix, base, routerName+filepath.Ext(fileName))
+	fmt.Println(fileName)
+	matched := reFileName.FindStringSubmatch(fileName)
+	if len(matched) < 2 {
+		return ""
+	}
+	routerName := matched[reNameIndex]
+	suffix := matched[reSuffixIndex]
+	return path.Join(d.Prefix, base, routerName+suffix)
 }

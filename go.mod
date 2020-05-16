@@ -9,6 +9,7 @@ require (
 	github.com/minio/minio-go/v6 v6.0.55 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/thoas/go-funk v0.6.0
 	goftp.io/server v0.3.4
 	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37 // indirect
 	golang.org/x/net v0.0.0-20200513185701-a91f0712d120 // indirect
