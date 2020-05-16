@@ -2,6 +2,8 @@
 
 The project based <https://www.juniper.net/documentation/en_US/junos/topics/task/configuration/junos-software-system-management-router-configuration-archiving.html>
 
+based `transfer-on-commit` command automate backup junos configuration to github repo
+
 ## JunOS Configuration
 
 ```text
