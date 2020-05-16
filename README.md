@@ -13,5 +13,5 @@ e.q:
 
 ```text
 set system archival configuration transfer-on-commit
-set system archival configuration archive-sites ftp://juniper@septs.blog:28374 password "your password"
+set system archival configuration archive-sites ftp://juniper@example.com password "your password"
 ```
