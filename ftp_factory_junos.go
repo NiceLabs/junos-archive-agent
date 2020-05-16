@@ -44,16 +44,32 @@ func (d *junosDriver) PutFile(destPath string, data io.Reader, appendData bool) 
 		return
 	}
 	n = int64(len(block))
-	storagePath := d.makeStoragePath(destPath)
+
+	filePath := d.makeStoragePath(destPath)
 
 	ctx := context.Background()
+	content, _, _, _ := d.client.Repositories.GetContents(ctx, d.Owner, d.Repo, filePath, nil)
 	opts := &github.RepositoryContentFileOptions{Message: &destPath, Content: block}
-	content, _, _, _ := d.client.Repositories.GetContents(ctx, d.Owner, d.Repo, storagePath, nil)
 	if content != nil {
 		opts.SHA = content.SHA
 	}
-	_, _, err = d.client.Repositories.UpdateFile(context.Background(), d.Owner, d.Repo, storagePath, opts)
+	if content != nil && d.isChanged(content, string(opts.Content)) {
+		log.Println("not changed, ignored")
+		return
+	}
+	_, _, err = d.client.Repositories.UpdateFile(ctx, d.Owner, d.Repo, filePath, opts)
 	return
+}
+
+func (d *junosDriver) isChanged(content *github.RepositoryContent, original string) bool {
+	payload, err := content.GetContent()
+	if err != nil {
+		return false
+	}
+	return strings.EqualFold(
+		payload[strings.Index(payload, "\n"):],
+		original[strings.Index(original, "\n"):],
+	)
 }
 
 func (d *junosDriver) decompress(data io.Reader) ([]byte, error) {
@@ -68,6 +84,5 @@ func (d *junosDriver) makeStoragePath(name string) string {
 	base, fileName := path.Split(name)
 	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
 	routerName := strings.SplitN(fileName, "_", 3)[0]
-	log.Println(base, name, fileName, routerName)
 	return path.Join(d.Prefix, base, routerName+filepath.Ext(fileName))
 }
