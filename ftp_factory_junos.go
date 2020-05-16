@@ -4,7 +4,6 @@ import (
 	"compress/gzip"
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -94,7 +93,6 @@ func (d *junosDriver) decompress(data io.Reader) ([]byte, error) {
 func (d *junosDriver) makeFilePath(name string) string {
 	base, fileName := path.Split(name)
 	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
-	fmt.Println(fileName)
 	matched := reFileName.FindStringSubmatch(fileName)
 	if len(matched) < 2 {
 		return ""
