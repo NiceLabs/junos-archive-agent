@@ -1,8 +1,8 @@
-# Juniper Archive Agent
+# JunOS Archive Agent
 
 The project based <https://www.juniper.net/documentation/en_US/junos/topics/task/configuration/junos-software-system-management-router-configuration-archiving.html>
 
-based `transfer-on-commit` command automate backup junos configuration to github repo
+based `transfer-on-commit` command automate backup junos configuration to github repository
 
 ## JunOS Configuration
 
@@ -39,8 +39,8 @@ set system archival configuration archive-sites ftp://juniper@example.com passwo
 ## Logging
 
 ```text
-vultr juniper-archive-agent # docker-compose logs
-Attaching to juniper-archive-agent_agent_1
+# docker-compose logs
+Attaching to junos-archive-agent_agent_1
 agent_1  | 2020/05/16 06:01:31   JunOS Archive listening on 21
 agent_1  | 2020/05/16 06:06:32 2cd57795b3724c991be7  Connection Established
 agent_1  | 2020/05/16 06:06:32 2cd57795b3724c991be7 < 220 JunOS FTP Archive Server

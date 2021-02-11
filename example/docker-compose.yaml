@@ -1,7 +1,7 @@
 version: "3"
-services: 
+services:
   agent:
-    image: nicelabs/juniper-archive-agent:latest
+    image: nicelabs/junos-archive-agent:latest
     ports:
       - "20:20"
       - "21:21"
